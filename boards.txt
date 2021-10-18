@@ -5460,6 +5460,15 @@ GenWL.menu.pnum.GENERIC_WLE5JCIX.build.board=GENERIC_WLE5JCIX
 GenWL.menu.pnum.GENERIC_WLE5JCIX.build.product_line=STM32WLE5xx
 GenWL.menu.pnum.GENERIC_WLE5JCIX.build.variant=STM32WLxx/WL54JCI_WL55JCI_WLE4J(8-B-C)I_WLE5J(8-B-C)I
 
+# Seeed studios LoRa E5 mini
+GenWL.menu.pnum.SEEED_LORA_E5_MINI=Seeed Studios LoRa E5 mini
+GenWL.menu.pnum.SEEED_LORA_E5_MINI.upload.maximum_size=262144
+GenWL.menu.pnum.SEEED_LORA_E5_MINI.upload.maximum_data_size=65536
+GenWL.menu.pnum.SEEED_LORA_E5_MINI.build.board=SEEED_LORA_E5_MINI
+GenWL.menu.pnum.SEEED_LORA_E5_MINI.build.product_line=STM32WLE5xx
+GenWL.menu.pnum.SEEED_LORA_E5_MINI.build.variant_h=variant_SEEED_LORA_E5_MINI.h
+GenWL.menu.pnum.SEEED_LORA_E5_MINI.build.variant=STM32WLxx/WL54JCI_WL55JCI_WLE4J(8-B-C)I_WLE5J(8-B-C)I
+
 # Upload menu
 GenWL.menu.upload_method.swdMethod=STM32CubeProgrammer (SWD)
 GenWL.menu.upload_method.swdMethod.upload.protocol=0
