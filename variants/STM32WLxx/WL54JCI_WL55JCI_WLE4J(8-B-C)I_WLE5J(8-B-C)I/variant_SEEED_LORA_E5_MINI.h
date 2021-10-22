@@ -139,6 +139,10 @@
   #define HAL_DAC_MODULE_ENABLED
 #endif
 
+#if !defined(HAL_SUBGHZ_MODULE_DISABLED)
+  #define HAL_SUBGHZ_MODULE_ENABLED
+#endif
+
 /*----------------------------------------------------------------------------
  *        Arduino objects - C++ only
  *----------------------------------------------------------------------------*/
