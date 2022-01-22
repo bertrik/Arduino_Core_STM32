@@ -5,7 +5,7 @@
 # https://arduino.github.io/arduino-cli/latest/platform-specification/
 
 name=STM32 boards groups (Board to be selected from Tools submenu 'Board part number')
-version=2.1.0
+version=2.2.0
 
 # STM compile variables
 # ----------------------
@@ -17,7 +17,7 @@ compiler.warning_flags.default=
 compiler.warning_flags.more=-Wall
 compiler.warning_flags.all=-Wall -Wextra
 
-compiler.path={runtime.tools.xpack-arm-none-eabi-gcc-10.2.1-1.1.path}/bin/
+compiler.path={runtime.tools.xpack-arm-none-eabi-gcc-10.3.1-2.3.path}/bin/
 
 compiler.S.cmd=arm-none-eabi-gcc
 compiler.c.cmd=arm-none-eabi-gcc
