@@ -1,5 +1,4 @@
 import argparse
-import datetime
 import json
 import re
 import subprocess
@@ -12,6 +11,10 @@ from itertools import groupby
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 from xml.dom.minidom import parse, Node
+
+script_path = Path(__file__).parent.resolve()
+sys.path.append(str(script_path.parent))
+from utils import execute_cmd, getRepoBranchName
 
 mcu_list = []  # 'name'
 io_list = []  # 'PIN','name'
@@ -58,7 +61,7 @@ mcu_family = ""
 mcu_refname = ""
 mcu_flash = []
 mcu_ram = []
-
+legacy_hal = {"CAN": ["F0", "F1", "F2", "F3", "F4", "F7", "L4"], "ETH": ["F4", "H7"]}
 # Cube information
 product_line_dict = {}
 
@@ -185,7 +188,7 @@ def parse_mcu_file():
                 else:
                     usb_inst["usb"] = inst.group(1)
             else:
-                if gpiofile == "" and "GPIO" in s.attributes["Name"].value:
+                if gpiofile == "" and s.attributes["Name"].value == "GPIO":
                     gpiofile = s.attributes["Version"].value
 
 
@@ -813,7 +816,9 @@ def can_pinmap(lst):
         )
     return dict(
         name=name,
-        hal=name,
+        hal=["CAN", "CAN_LEGACY"]
+        if name != "FDCAN" and any(mcu in mcu_family for mcu in legacy_hal["CAN"])
+        else name,
         aname=aname,
         data="",
         wpin=max(wpin) + 1,
@@ -842,7 +847,9 @@ def eth_pinmap():
         )
     return dict(
         name="ETHERNET",
-        hal="ETH",
+        hal=["ETH", "ETH_LEGACY"]
+        if any(mcu in mcu_family for mcu in legacy_hal["ETH"])
+        else "ETH",
         aname="Ethernet",
         data="",
         wpin=max(wpin) + 1,
@@ -2007,7 +2014,9 @@ def aggregate_dir():
         out_family_path = root_dir / "variants" / mcu_family.name
         # Get all mcu_dir
         mcu_dirs = sorted(mcu_family.glob("*/"))
-
+        # Get original directory list of current serie STM32YYxx
+        mcu_out_dirs_ori = sorted(out_family_path.glob("*/"))
+        mcu_out_dirs_up = []
         # Group mcu directories when only expressions and xml file name are different
         while mcu_dirs:
             # Pop first item
@@ -2024,13 +2033,16 @@ def aggregate_dir():
             variant_exp = []
             # Compare the first directory to all other directories
             while mcu_dirs and index < len(mcu_dirs):
-                # Compare all the variant file except the generic_boards.txt
+                # Compare all the variant files except the generic_boards.txt
                 mcu_dir2_files_list = [
                     mcu_dirs[index] / periph_c_filename,
                     mcu_dirs[index] / pinvar_h_filename,
                     mcu_dirs[index] / variant_cpp_filename,
                     mcu_dirs[index] / variant_h_filename,
                 ]
+                # Iterate over each variant files
+                periph_xml_tmp = []
+                variant_exp_tmp = []
                 for index2, fname in enumerate(mcu_dir1_files_list):
                     with open(fname, "r") as f1:
                         with open(mcu_dir2_files_list[index2], "r") as f2:
@@ -2039,10 +2051,12 @@ def aggregate_dir():
                             if not diff or len(diff) == 2:
                                 if index2 == 0:
                                     for line in diff:
-                                        periph_xml += periperalpins_regex.findall(line)
+                                        periph_xml_tmp += periperalpins_regex.findall(
+                                            line
+                                        )
                                 elif index2 == 2:
                                     for line in diff:
-                                        variant_exp += variant_regex.findall(line)
+                                        variant_exp_tmp += variant_regex.findall(line)
                                 continue
                             else:
                                 # Not the same directory compare with the next one
@@ -2050,9 +2064,17 @@ def aggregate_dir():
                                 break
                 # All files compared and matched
                 else:
+                    # Concatenate lists without duplicate
+                    uniq_periph_xml = set(periph_xml_tmp) - set(periph_xml)
+                    periph_xml = periph_xml + list(uniq_periph_xml)
+                    uniq_variant_exp = set(variant_exp_tmp) - set(variant_exp)
+                    variant_exp = variant_exp + list(uniq_variant_exp)
                     # Matched files append to the group list
                     group_mcu_dir.append(mcu_dirs.pop(index))
+                    del periph_xml_tmp[:]
+                    del variant_exp_tmp[:]
                 del mcu_dir2_files_list[:]
+
             # Merge directories name and contents if needed
             mcu_dir = merge_dir(
                 out_temp_path, group_mcu_dir, mcu_family, periph_xml, variant_exp
@@ -2069,8 +2091,38 @@ def aggregate_dir():
                     fname.unlink()
                 else:
                     fname.replace(out_path / fname.name)
+            # Append updated directory to the list of current serie STM32YYxx
+            mcu_out_dirs_up.append(out_path)
             del group_mcu_dir[:]
             del mcu_dir1_files_list[:]
+        mcu_out_dirs_up.sort()
+        new_dirs = set(mcu_out_dirs_up) - set(mcu_out_dirs_ori)
+        if new_dirs:
+            nb_new = len(new_dirs)
+            dir_str = "directories" if nb_new > 1 else "directory"
+            print(f"\nNew {dir_str} for {mcu_family.name}:\n")
+            for d in new_dirs:
+                print(f"  - {d.name}")
+            print("\n  --> Please, check if it is a new directory or a renamed one.")
+        old_dirs = set(mcu_out_dirs_ori) - set(mcu_out_dirs_up)
+        if old_dirs:
+            nb_old = len(old_dirs)
+            dir_str = "Directories" if nb_old > 1 else "Directory"
+            print(f"\n{dir_str} not updated for {mcu_family.name}:\n")
+            for d in old_dirs:
+                print(f"  - {d.name}")
+            print(
+                """
+  --> Please, check if it is due to directory name update (renamed), if true then:
+    - Move custom boards definition files, if any.
+    - Move linker script(s), if any.
+    - Copy 'SystemClock_Config(void)' function to the new generic clock config file.
+  --> Then remove it, update old path in boards.txt
+     (for custom board(s) as well as generic ones).
+"""
+            )
+        del mcu_out_dirs_ori[:]
+        del mcu_out_dirs_up[:]
 
 
 def default_cubemxdir():
@@ -2143,46 +2195,44 @@ def manage_repo():
     global db_release
     repo_local_path.mkdir(parents=True, exist_ok=True)
 
-    try:
-        if not args.skip:
-            print(f"Updating {repo_name}...")
-            if repo_path.is_dir():
-                # Get new tags from the remote
-                git_cmds = [
-                    ["git", "-C", repo_path, "clean", "-fdx"],
-                    ["git", "-C", repo_path, "fetch"],
-                    ["git", "-C", repo_path, "reset", "--hard", "origin/main"],
-                ]
-            else:
-                # Clone it as it does not exists yet
-                git_cmds = [["git", "-C", repo_local_path, "clone", gh_url]]
-
-            for cmd in git_cmds:
-                subprocess.check_output(cmd).decode("utf-8")
+    if not args.skip:
+        print(f"Updating {repo_name}...")
         if repo_path.is_dir():
-            # Get tag
-            sha1_id = (
-                subprocess.check_output(
-                    ["git", "-C", repo_path, "rev-list", "--tags", "--max-count=1"]
-                )
-                .decode("utf-8")
-                .strip()
-            )
-            version_tag = (
-                subprocess.check_output(
-                    ["git", "-C", repo_path, "describe", "--tags", sha1_id]
-                )
-                .decode("utf-8")
-                .strip()
-            )
-            subprocess.check_output(
-                ["git", "-C", repo_path, "checkout", version_tag],
-                stderr=subprocess.DEVNULL,
-            )
-            db_release = version_tag
-            return True
-    except subprocess.CalledProcessError as e:
-        print(f"Command {e.cmd} failed with error code {e.returncode}")
+            rname, bname = getRepoBranchName(repo_path)
+
+            # Get new tags from the remote
+            git_cmds = [
+                ["git", "-C", repo_path, "clean", "-fdx"],
+                ["git", "-C", repo_path, "fetch"],
+                [
+                    "git",
+                    "-C",
+                    repo_path,
+                    "reset",
+                    "--hard",
+                    f"{rname}/{bname}",
+                ],
+            ]
+        else:
+            # Clone it as it does not exists yet
+            git_cmds = [["git", "-C", repo_local_path, "clone", gh_url]]
+
+        for cmd in git_cmds:
+            execute_cmd(cmd, None)
+    if repo_path.is_dir():
+        # Get tag
+        sha1_id = execute_cmd(
+            ["git", "-C", repo_path, "rev-list", "--tags", "--max-count=1"], None
+        )
+        version_tag = execute_cmd(
+            ["git", "-C", repo_path, "describe", "--tags", sha1_id], None
+        )
+        execute_cmd(
+            ["git", "-C", repo_path, "checkout", version_tag],
+            subprocess.DEVNULL,
+        )
+        db_release = version_tag
+        return True
     return False
 
 

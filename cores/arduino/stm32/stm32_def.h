@@ -6,7 +6,7 @@
  * @brief STM32 core version number
  */
 #define STM32_CORE_VERSION_MAJOR    (0x02U) /*!< [31:24] major version */
-#define STM32_CORE_VERSION_MINOR    (0x03U) /*!< [23:16] minor version */
+#define STM32_CORE_VERSION_MINOR    (0x04U) /*!< [23:16] minor version */
 #define STM32_CORE_VERSION_PATCH    (0x00U) /*!< [15:8]  patch version */
 /*
  * Extra label for development:
@@ -104,9 +104,22 @@ extern "C" {
 // weaked functions declaration
 void SystemClock_Config(void);
 
+#if defined(NDEBUG)
+#if !defined(_Error_Handler)
+#define _Error_Handler(str, value) \
+  while (1) {\
+  }
+#endif
+#if !defined(Error_Handler)
+#define Error_Handler() \
+  while (1) {\
+  }
+#endif
+#else
 void _Error_Handler(const char *, int);
 
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)
+#endif
 
 #ifdef __cplusplus
 } // extern "C"

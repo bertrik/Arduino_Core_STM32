@@ -157,8 +157,8 @@ in voltage and temperature.  */
 #if !defined (PREFETCH_ENABLE)
 #define  PREFETCH_ENABLE              1U /* To enable prefetch */
 #endif
-#if !defined (ART_ACCLERATOR_ENABLE)
-#define  ART_ACCLERATOR_ENABLE        1U /* To enable ART Accelerator */
+#if !defined (ART_ACCELERATOR_ENABLE)
+#define  ART_ACCELERATOR_ENABLE        1U /* To enable ART Accelerator */
 #endif
 
 #define  USE_HAL_ADC_REGISTER_CALLBACKS         0U /* ADC register callback disabled       */
@@ -338,6 +338,10 @@ in voltage and temperature.  */
 #ifdef HAL_ETH_MODULE_ENABLED
 #include "stm32f7xx_hal_eth.h"
 #endif /* HAL_ETH_MODULE_ENABLED */
+
+#ifdef HAL_ETH_LEGACY_MODULE_ENABLED
+#include "Legacy/stm32f7xx_hal_eth_legacy.h"
+#endif /* HAL_ETH_LEGACY_MODULE_ENABLED */
 
 #ifdef HAL_EXTI_MODULE_ENABLED
 #include "stm32f7xx_hal_exti.h"

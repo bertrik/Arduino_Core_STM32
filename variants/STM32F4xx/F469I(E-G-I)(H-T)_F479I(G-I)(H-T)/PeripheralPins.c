@@ -14,7 +14,7 @@
  * Automatically generated from STM32F469I(E-G)Tx.xml, STM32F469I(E-G-I)Hx.xml
  * STM32F469IITx.xml, STM32F479I(G-I)Hx.xml
  * STM32F479I(G-I)Tx.xml
- * CubeMX DB release 6.0.50
+ * CubeMX DB release 6.0.60
  */
 #if !defined(CUSTOM_PERIPHERAL_PINS)
 #include "Arduino.h"
@@ -358,7 +358,7 @@ WEAK const PinMap PinMap_SPI_SSEL[] = {
 
 //*** CAN ***
 
-#ifdef HAL_CAN_MODULE_ENABLED
+#if defined(HAL_CAN_MODULE_ENABLED) || defined(HAL_CAN_LEGACY_MODULE_ENABLED)
 WEAK const PinMap PinMap_CAN_RD[] = {
   {PA_11, CAN1, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF9_CAN1)},
   {PB_5,  CAN2, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF9_CAN2)},
@@ -370,7 +370,7 @@ WEAK const PinMap PinMap_CAN_RD[] = {
 };
 #endif
 
-#ifdef HAL_CAN_MODULE_ENABLED
+#if defined(HAL_CAN_MODULE_ENABLED) || defined(HAL_CAN_LEGACY_MODULE_ENABLED)
 WEAK const PinMap PinMap_CAN_TD[] = {
   {PA_12, CAN1, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF9_CAN1)},
   {PB_6,  CAN2, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF9_CAN2)},
@@ -383,7 +383,7 @@ WEAK const PinMap PinMap_CAN_TD[] = {
 
 //*** ETHERNET ***
 
-#ifdef HAL_ETH_MODULE_ENABLED
+#if defined(HAL_ETH_MODULE_ENABLED) || defined(HAL_ETH_LEGACY_MODULE_ENABLED)
 WEAK const PinMap PinMap_Ethernet[] = {
   {PA_0,      ETH, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF11_ETH)}, // ETH_CRS
   {PA_1,      ETH, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF11_ETH)}, // ETH_REF_CLK

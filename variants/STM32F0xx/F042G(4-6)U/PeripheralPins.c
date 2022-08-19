@@ -12,7 +12,7 @@
  */
 /*
  * Automatically generated from STM32F042G(4-6)Ux.xml
- * CubeMX DB release 6.0.50
+ * CubeMX DB release 6.0.60
  */
 #if !defined(CUSTOM_PERIPHERAL_PINS)
 #include "Arduino.h"
@@ -180,7 +180,7 @@ WEAK const PinMap PinMap_SPI_SSEL[] = {
 
 //*** CAN ***
 
-#ifdef HAL_CAN_MODULE_ENABLED
+#if defined(HAL_CAN_MODULE_ENABLED) || defined(HAL_CAN_LEGACY_MODULE_ENABLED)
 WEAK const PinMap PinMap_CAN_RD[] = {
   {PA_11_R, CAN1, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF4_CAN)},
   {PB_8,    CAN1, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF4_CAN)},
@@ -188,7 +188,7 @@ WEAK const PinMap PinMap_CAN_RD[] = {
 };
 #endif
 
-#ifdef HAL_CAN_MODULE_ENABLED
+#if defined(HAL_CAN_MODULE_ENABLED) || defined(HAL_CAN_LEGACY_MODULE_ENABLED)
 WEAK const PinMap PinMap_CAN_TD[] = {
   {PA_12_R, CAN1, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF4_CAN)},
   {NC,      NP,   0}

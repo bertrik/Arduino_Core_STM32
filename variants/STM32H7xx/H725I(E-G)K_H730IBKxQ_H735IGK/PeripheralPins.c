@@ -13,7 +13,7 @@
 /*
  * Automatically generated from STM32H725IEKx.xml, STM32H725IGKx.xml
  * STM32H730IBKxQ.xml, STM32H735IGKx.xml
- * CubeMX DB release 6.0.50
+ * CubeMX DB release 6.0.60
  */
 #if !defined(CUSTOM_PERIPHERAL_PINS)
 #include "Arduino.h"
@@ -513,7 +513,7 @@ WEAK const PinMap PinMap_CAN_TD[] = {
 
 //*** ETHERNET ***
 
-#ifdef HAL_ETH_MODULE_ENABLED
+#if defined(HAL_ETH_MODULE_ENABLED) || defined(HAL_ETH_LEGACY_MODULE_ENABLED)
 WEAK const PinMap PinMap_Ethernet[] = {
   {PA_0,        ETH, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF11_ETH)}, // ETH_CRS
   {PA_0_C,      ETH, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_PULLUP, GPIO_AF11_ETH)}, // ETH_CRS
