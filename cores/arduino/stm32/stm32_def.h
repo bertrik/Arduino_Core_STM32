@@ -6,7 +6,7 @@
  * @brief STM32 core version number
  */
 #define STM32_CORE_VERSION_MAJOR    (0x02U) /*!< [31:24] major version */
-#define STM32_CORE_VERSION_MINOR    (0x04U) /*!< [23:16] minor version */
+#define STM32_CORE_VERSION_MINOR    (0x06U) /*!< [23:16] minor version */
 #define STM32_CORE_VERSION_PATCH    (0x00U) /*!< [15:8]  patch version */
 /*
  * Extra label for development:
@@ -22,7 +22,9 @@
 
 #define USE_HAL_DRIVER
 
-#if defined(STM32F0xx)
+#if defined(STM32C0xx)
+  #include "stm32c0xx.h"
+#elif defined(STM32F0xx)
   #include "stm32f0xx.h"
 #elif defined(STM32F1xx)
   #include "stm32f1xx.h"
@@ -84,10 +86,15 @@
   #endif
 #endif
 
-/* STM32G0xx defined USB_DRD_FS */
+/* STM32G0xx and some STM32U5xx defined USB_DRD_FS */
 #if !defined(USB) && defined(USB_DRD_FS)
   #define USB USB_DRD_FS
   #define PinMap_USB PinMap_USB_DRD_FS
+  #if defined(STM32U5xx)
+    #define USB_BASE USB_DRD_BASE
+    #define __HAL_RCC_USB_CLK_ENABLE __HAL_RCC_USB_FS_CLK_ENABLE
+    #define __HAL_RCC_USB_CLK_DISABLE __HAL_RCC_USB_FS_CLK_DISABLE
+  #endif
 #endif
 
 /**

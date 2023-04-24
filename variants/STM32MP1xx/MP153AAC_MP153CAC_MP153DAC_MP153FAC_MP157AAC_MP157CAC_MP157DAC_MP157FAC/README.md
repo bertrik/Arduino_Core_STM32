@@ -109,6 +109,10 @@ To increase the performance of SerialVirtIO you can resize the related buffer co
 
 The recommended option is to resize `VRING_NUM_BUFFS`. Be very cautious when resizing `RPMSG_BUFFER_SIZE`, which must be matched with the Linux kernel definition. Also `VIRTIO_BUFFER_SIZE` has the minimum required size depending on the other two. See their links above for further descriptions.
 
+#### Note
+
+* Since openSTLinux distribution 4.0 with Linux 5.15, `RPMSG_SERVICE_NAME` has been renamed from `rpmsg-tty-channel` to `rpmsg-tty`, if older distribution is used, it is required to redefine it to  `rpmsg-tty-channel`
+
 To redefine these definitions, see how to create `build_opt.h` described in Debugging section below.
 
 ### Virtual Serial Example
@@ -241,7 +245,7 @@ There are additional pins for LEDs and buttons.
 | PA_13 | 17 / LED_RED                  | USER2_BTN            | Active Low, LED LD6, also connected to B4 button |
 | PH_7  | 18 / LED_ORANGE / LED_BUILTIN |                      | Active High, LED LD7                             |
 
-[`variant.h` of the board] has the complete information about the pinouts.
+[`variant_STM32MP157_DK.h` of the board] has the complete information about the pinouts.
 
 ## Uploading
 
@@ -280,7 +284,7 @@ And then the Device Tree should enable TIM1 for the coprocessor, although this d
 };
 ```
 
-[stm32mp157c-dk2-m4-examples.dts] is a great example to begin with. For the full list of peripherals used by the Arduino firmware, see [PeripheralPins.c](/variants/STM32MP157_DK/PeripheralPins.c) of the board.
+[stm32mp157c-dk2-m4-examples.dts] is a great example to begin with. For the full list of peripherals used by the Arduino firmware, see [PeripheralPins_STM32MP157_DK.c](/variants/STM32MP1xx/MP153AAC_MP153CAC_MP153DAC_MP153FAC_MP157AAC_MP157CAC_MP157DAC_MP157FAC/PeripheralPins_STM32MP157_DK.c) of the board.
 
 ## Limitations
 
@@ -306,11 +310,11 @@ And then the Device Tree should enable TIM1 for the coprocessor, although this d
 [Linux RPMsg]: https://wiki.st.com/stm32mpu/wiki/Linux_RPMsg_framework_overview
 [a hard restriction of the write size]: /cores/arduino/VirtIOSerial.cpp#L148
 
-[build_opt.h]: https://github.com/stm32duino/wiki/wiki/Customize-build-options-using-build_opt.h
-[build_opt.h description in wiki]: https://github.com/stm32duino/wiki/wiki/Customize-build-options-using-build_opt.h
+[build_opt.h]: https://github.com/stm32duino/Arduino_Core_STM32/wiki/Customize-build-options-using-build_opt.h
+[build_opt.h description in wiki]: https://github.com/stm32duino/Arduino_Core_STM32/wiki/Customize-build-options-using-build_opt.h
 [virtio_log.h]: /cores/arduino/stm32/OpenAMP/virtio_log.h
 
-[`variant.h` of the board]: /variants/STM32MP157_DK/variant.h
+[`variant_STM32MP157_DK.h` of the board]: /variants/STM32MP1xx/MP153AAC_MP153CAC_MP153DAC_MP153FAC_MP157AAC_MP157CAC_MP157DAC_MP157FAC/variant_STM32MP157_DK.h
 
 [The ST Wiki page on C-Kermit]: https://wiki.st.com/stm32mpu/wiki/How_to_transfer_a_file_over_serial_console
 [a bug in OpenSTLinux]: https://community.st.com/s/question/0D50X0000B9vHa4/cannot-get-download-a-file-using-kermit

@@ -72,6 +72,9 @@
 #define PA1_ALT1                (PA1 | ALT1)
 #define PA2_ALT1                (PA2 | ALT1)
 #define PA3_ALT1                (PA3 | ALT1)
+#define PA4_ALT1                (PA4 | ALT1)
+#define PA5_ALT1                (PA5 | ALT1)
+#define PA6_ALT1                (PA6 | ALT1)
 #define PA7_ALT1                (PA7 | ALT1)
 #define PB8_ALT1                (PB8 | ALT1)
 #define PB9_ALT1                (PB9 | ALT1)
@@ -121,6 +124,20 @@
   #define PIN_SERIAL_TX         PA2
 #endif
 
+// Alias
+#ifndef DEBUG_SUBGHZSPI_MOSI
+  #define DEBUG_SUBGHZSPI_MOSI  PA7_ALT1
+#endif
+#ifndef DEBUG_SUBGHZSPI_MISO
+  #define DEBUG_SUBGHZSPI_MISO  PA6_ALT1
+#endif
+#ifndef DEBUG_SUBGHZSPI_SCLK
+  #define DEBUG_SUBGHZSPI_SCLK  PA5_ALT1
+#endif
+#ifndef DEBUG_SUBGHZSPI_SS
+  #define DEBUG_SUBGHZSPI_SS    PA4_ALT1
+#endif
+
 #ifndef UART_WAKEUP_EXTI_LINE
   // For LPUART1
   #define UART_WAKEUP_EXTI_LINE LL_EXTI_LINE_28
@@ -130,6 +147,16 @@
 #if !defined(HAL_DAC_MODULE_DISABLED)
   #define HAL_DAC_MODULE_ENABLED
 #endif
+
+// LoRaWAN definitions
+#define LORAWAN_BOARD_HAS_TCXO          1U
+
+#define LORAWAN_RFSWITCH_PINS           PC3,PC4,PC5
+#define LORAWAN_RFSWITCH_PIN_COUNT      3
+#define LORAWAN_RFSWITCH_OFF_VALUES     LOW,LOW,LOW
+#define LORAWAN_RFSWITCH_RX_VALUES      HIGH,HIGH,LOW
+#define LORAWAN_RFSWITCH_RFO_LP_VALUES  HIGH,HIGH,HIGH
+#define LORAWAN_RFSWITCH_RFO_HP_VALUES  HIGH,LOW,HIGH
 
 /*----------------------------------------------------------------------------
  *        Arduino objects - C++ only

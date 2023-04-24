@@ -511,6 +511,7 @@ typedef  void (*pSMBUS_AddrCallbackTypeDef)(SMBUS_HandleTypeDef *hsmbus, uint8_t
   * @param  __HANDLE__ specifies the SMBUS Handle.
   * @param  __FLAG__ specifies the flag to clear.
   *          This parameter can be any combination of the following values:
+  *            @arg @ref SMBUS_FLAG_TXE     Transmit data register empty
   *            @arg @ref SMBUS_FLAG_ADDR    Address matched (slave mode)
   *            @arg @ref SMBUS_FLAG_AF      NACK received flag
   *            @arg @ref SMBUS_FLAG_STOPF   STOP detection flag
@@ -523,7 +524,9 @@ typedef  void (*pSMBUS_AddrCallbackTypeDef)(SMBUS_HandleTypeDef *hsmbus, uint8_t
   *
   * @retval None
   */
-#define __HAL_SMBUS_CLEAR_FLAG(__HANDLE__, __FLAG__) ((__HANDLE__)->Instance->ICR = (__FLAG__))
+#define __HAL_SMBUS_CLEAR_FLAG(__HANDLE__, __FLAG__)  (((__FLAG__) == SMBUS_FLAG_TXE) ? \
+                                                       ((__HANDLE__)->Instance->ISR |= (__FLAG__)) : \
+                                                       ((__HANDLE__)->Instance->ICR = (__FLAG__)))
 
 /** @brief  Enable the specified SMBUS peripheral.
   * @param  __HANDLE__ specifies the SMBUS Handle.
@@ -748,8 +751,8 @@ void HAL_SMBUS_ErrorCallback(SMBUS_HandleTypeDef *hsmbus);
   */
 
 /* Peripheral State and Errors functions  **************************************************/
-uint32_t HAL_SMBUS_GetState(SMBUS_HandleTypeDef *hsmbus);
-uint32_t HAL_SMBUS_GetError(SMBUS_HandleTypeDef *hsmbus);
+uint32_t HAL_SMBUS_GetState(const SMBUS_HandleTypeDef *hsmbus);
+uint32_t HAL_SMBUS_GetError(const SMBUS_HandleTypeDef *hsmbus);
 
 /**
   * @}
